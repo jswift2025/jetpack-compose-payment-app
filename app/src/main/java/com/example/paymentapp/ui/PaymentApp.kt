@@ -10,68 +10,72 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.Modifier
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.paymentapp.data.AppContainer
-import com.example.paymentapp.ui.theme.PaymentAppTheme
+import com.example.paymentapp.ui.components.AppNavRail
 import kotlinx.coroutines.launch
 
 
 @Composable
 fun PaymentApp(
     appContainer: AppContainer,
-    widthSizeClass: WindowWidthSizeClass
+    widthSizeClass: WindowWidthSizeClass,
+    modifier: Modifier = Modifier
 ) {
-    PaymentAppTheme {
-        val navController = rememberNavController()
-        val navigationActions = remember(navController) {
-            PaymentNavigationActions(navController)
-        }
+    val navController = rememberNavController()
+    val navigationActions = remember(navController) {
+        PaymentNavigationActions(navController)
+    }
 
-        val coroutineScope = rememberCoroutineScope()
-        val navBackStackEntry by navController.currentBackStackEntryAsState()
-        val currentRoute =
-            navBackStackEntry?.destination?.route ?: PaymentDestinations.LANDING_ROUTE
+    val coroutineScope = rememberCoroutineScope()
+    val navBackStackEntry by navController.currentBackStackEntryAsState()
+    val currentRoute =
+        navBackStackEntry?.destination?.route ?: PaymentDestinations.LANDING_ROUTE
 
-        val isExpandedScreen = widthSizeClass == WindowWidthSizeClass.Expanded
-        val sizeAwareDrawerState = rememberSizeAwareDrawerState(isExpandedScreen)
+    val isExpandedScreen = widthSizeClass == WindowWidthSizeClass.Expanded
+    val sizeAwareDrawerState = rememberSizeAwareDrawerState(isExpandedScreen)
 
-        ModalNavigationDrawer(
-            drawerContent = {
-                AppDrawer(
-                    drawerState = sizeAwareDrawerState,
-                    currentRoute = currentRoute,
-                    navigateToHome = navigationActions.navigateToLanding,
-                    navigateToTerminalSetup = navigationActions.navigateToTerminalSetup,
-                    navigateToPerformTransaction = navigationActions.navigateToTransaction,
-                    closeDrawer = {
-                        coroutineScope.launch {
-                            sizeAwareDrawerState.close()
-                        }
-                    }
-                )
-            },
-            drawerState = sizeAwareDrawerState,
-            // Only enable the drawer via gestures if the screen is not expanded
-            gesturesEnabled = !isExpandedScreen
-        ) {
-            Row {
-                if (isExpandedScreen) {
-                    AppNavRail()
-                }
-            }
-            PaymentNavGraph(
-                appContainer = appContainer,
-                isExpandedScreen = isExpandedScreen,
-                navController = navController,
-                openDrawer = {
+    ModalNavigationDrawer(
+        drawerContent = {
+            AppDrawer(
+                drawerState = sizeAwareDrawerState,
+                currentRoute = currentRoute,
+                navigateToHome = navigationActions.navigateToLanding,
+                navigateToTerminalSetup = navigationActions.navigateToTerminalSetup,
+                navigateToPerformTransaction = navigationActions.navigateToTransaction,
+                closeDrawer = {
                     coroutineScope.launch {
-                        sizeAwareDrawerState.open()
+                        sizeAwareDrawerState.close()
                     }
                 }
             )
-
+        },
+        drawerState = sizeAwareDrawerState,
+        // Only enable the drawer via gestures if the screen is not expanded
+        gesturesEnabled = !isExpandedScreen
+    ) {
+        Row {
+            if (isExpandedScreen) {
+                AppNavRail(
+                    currentRoute = currentRoute,
+                    navigateToLanding = navigationActions.navigateToLanding,
+                    navigateToTerminalSetup = navigationActions.navigateToTerminalSetup,
+                    navigateToTransaction = navigationActions.navigateToTransaction
+                )
+            }
         }
+        PaymentNavGraph(
+            appContainer = appContainer,
+            isExpandedScreen = isExpandedScreen,
+            navController = navController,
+            openDrawer = {
+                coroutineScope.launch {
+                    sizeAwareDrawerState.open()
+                }
+            }
+        )
     }
 }
 

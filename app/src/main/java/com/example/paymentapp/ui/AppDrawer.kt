@@ -6,6 +6,7 @@ import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.List
 import androidx.compose.material3.DrawerState
 import androidx.compose.material3.Icon
+import androidx.compose.material3.ModalDrawerSheet
 import androidx.compose.material3.NavigationDrawerItem
 import androidx.compose.material3.NavigationDrawerItemDefaults
 import androidx.compose.material3.Text
@@ -25,43 +26,47 @@ fun AppDrawer(
     closeDrawer: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    NavigationDrawerItem(
-        label = {
-            Text(stringResource(R.string.section_home))
-        },
-        icon = {
-            Icon(Icons.Filled.Home, null)
-        },
-        selected = true,
-        onClick = {
-            navigateToHome(); closeDrawer()
-        },
-        modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)
-    )
-    NavigationDrawerItem(
-        label = {
-            Text(stringResource(R.string.section_terminal_setup))
-        },
-        icon = {
-            Icon(Icons.Filled.List, null)
-        },
-        selected = false,
-        onClick = {
-            navigateToTerminalSetup(); closeDrawer()
-        },
-        modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)
-    )
-    NavigationDrawerItem(
-        label = {
-            Text(stringResource(R.string.section_perform_transaction))
-        },
-        icon = {
-            Icon(Icons.Filled.List, null)
-        },
-        selected = false,
-        onClick = {
-            navigateToPerformTransaction(); closeDrawer()
-        },
-        modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)
-    )
+    ModalDrawerSheet(
+        modifier = modifier
+    ) {
+        NavigationDrawerItem(
+            label = {
+                Text(stringResource(R.string.section_home))
+            },
+            icon = {
+                Icon(Icons.Filled.Home, null)
+            },
+            selected = currentRoute == PaymentDestinations.LANDING_ROUTE,
+            onClick = {
+                navigateToHome(); closeDrawer()
+            },
+            modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)
+        )
+        NavigationDrawerItem(
+            label = {
+                Text(stringResource(R.string.section_terminal_setup))
+            },
+            icon = {
+                Icon(Icons.Filled.List, null)
+            },
+            selected = currentRoute == PaymentDestinations.TERMINAL_SETUP_ROUTE,
+            onClick = {
+                navigateToTerminalSetup(); closeDrawer()
+            },
+            modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)
+        )
+        NavigationDrawerItem(
+            label = {
+                Text(stringResource(R.string.section_perform_transaction))
+            },
+            icon = {
+                Icon(Icons.Filled.List, null)
+            },
+            selected = currentRoute == PaymentDestinations.TRANSACTION_ROUTE,
+            onClick = {
+                navigateToPerformTransaction(); closeDrawer()
+            },
+            modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)
+        )
+    }
 }
