@@ -1,0 +1,13 @@
+<resources>
+    <string name="app_name">Payment App</string>
+
+    <!-- Section headers -->
+    <string name="section_home">Home</string>
+    <string name="section_terminal_setup">Setup Transaction Manager</string>
+    <string name="section_perform_transaction">Perform Transaction</string>
+    <string name="section_terminal_settings">Read/Update Terminal Settings</string>
+    <string name="section_update_version">Update Version</string>
+
+
+
+</resources>
