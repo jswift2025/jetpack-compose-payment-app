@@ -1,6 +1,9 @@
 <resources>
     <string name="app_name">Payment App</string>
 
+    <!-- Common -->
+    <string name="common_placeholder">--</string>
+
     <!-- Section headers -->
     <string name="section_home">Home</string>
     <string name="section_terminal_setup">Setup Transaction Manager</string>
@@ -8,6 +11,14 @@
     <string name="section_terminal_settings">Read/Update Terminal Settings</string>
     <string name="section_update_version">Update Version</string>
 
+    <!-- Terminal Setup -->
+    <string name="label_scan">Scan</string>
+    <string name="label_connect">Connect</string>
+    <string name="label_disconnect">Disconnect</string>
+    <string name="label_info">Info</string>
+    <string name="label_terminal_type">Terminal Type</string>
+    <string name="label_selected_terminal">Selected Terminal</string>
+    <string name="label_connection_status">Connection Status</string>
 
 
 </resources>

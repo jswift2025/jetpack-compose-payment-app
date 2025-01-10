@@ -22,8 +22,6 @@ fun LandingRoute(
         isExpandedScreen = isExpandedScreen,
         onClickTerminalSetup = { Log.d(TAG, "Terminal Setup clicked") },
         onClickTransaction = { Log.d(TAG, "Transaction clicked") },
-        onClickTerminalSettings = { Log.d(TAG, "Terminal Settings clicked") },
-        onClickTerminalUpdate = { Log.d(TAG, "Terminal update clicked") },
         openDrawer = openDrawer,
         snackbarHostState = snackbarHostState
     )
@@ -46,16 +44,12 @@ fun LandingRoute(
     openDrawer: () -> Unit,
     onClickTerminalSetup: () -> Unit,
     onClickTransaction: () -> Unit,
-    onClickTerminalSettings: () -> Unit,
-    onClickTerminalUpdate: () -> Unit,
     snackbarHostState: SnackbarHostState) {
     LandingScreen(
         isExpandedScreen = isExpandedScreen,
         openDrawer = openDrawer,
         onClickTerminalSetup = onClickTerminalSetup,
         onClickTransaction = onClickTransaction,
-        onClickTerminalSettings = onClickTerminalSettings,
-        onClickTerminalUpdate = onClickTerminalUpdate,
         snackbarHostState = snackbarHostState
     )
 

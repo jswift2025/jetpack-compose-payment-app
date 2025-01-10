@@ -16,6 +16,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.paymentapp.R
+import com.example.paymentapp.ui.components.CommonButton
 import com.example.paymentapp.ui.theme.PaymentAppTheme
 
 
@@ -25,8 +26,6 @@ fun LandingScreen(
     openDrawer: () -> Unit,
     onClickTerminalSetup: () -> Unit,
     onClickTransaction: () -> Unit,
-    onClickTerminalSettings: () -> Unit,
-    onClickTerminalUpdate: () -> Unit,
     snackbarHostState: SnackbarHostState,
     modifier: Modifier = Modifier) {
     Column(
@@ -35,28 +34,12 @@ fun LandingScreen(
             .fillMaxHeight(),
         verticalArrangement = Arrangement.Center
     ) {
-        LandingButton(labelResource = R.string.section_terminal_setup) { }
-        LandingButton(labelResource = R.string.section_perform_transaction) { }
-        LandingButton(labelResource = R.string.section_terminal_settings) { }
-        LandingButton(labelResource = R.string.section_update_version) { }
+        CommonButton (labelResource = R.string.section_terminal_setup, onClick = onClickTerminalSetup)
+        CommonButton(labelResource = R.string.section_perform_transaction, onClick = onClickTransaction)
     }
 }
 
 
-// TODO: Add navigation to each of the sub-screens
-@Composable
-fun LandingButton(
-    modifier: Modifier = Modifier,
-    @StringRes labelResource: Int,
-    onClick: () -> Unit) {
-    Button(
-        modifier = modifier.fillMaxWidth(),
-        shape = ButtonDefaults.elevatedShape,
-        onClick = onClick
-    ) {
-        Text(text = stringResource(labelResource))
-    }
-}
 
 @Preview(showBackground = true)
 @Composable
@@ -65,10 +48,8 @@ fun LandingScreenPreview() {
         LandingScreen(
             false,
             openDrawer = {},
-            onClickTerminalUpdate = {},
             onClickTransaction = {},
             onClickTerminalSetup = {},
-            onClickTerminalSettings = {},
             snackbarHostState = SnackbarHostState()
         )
     }

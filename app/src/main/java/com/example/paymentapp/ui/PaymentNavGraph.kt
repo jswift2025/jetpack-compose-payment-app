@@ -8,6 +8,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.paymentapp.data.AppContainer
 import com.example.paymentapp.ui.landing.LandingRoute
+import com.example.paymentapp.ui.terminal.TerminalSetupRoute
 
 
 @Composable
@@ -35,7 +36,10 @@ fun PaymentNavGraph(
         composable(
             route = PaymentDestinations.TERMINAL_SETUP_ROUTE
         ) {
-
+            TerminalSetupRoute(
+                isExpandedScreen = isExpandedScreen,
+                openDrawer = openDrawer
+            )
         }
         composable(
             route = PaymentDestinations.TRANSACTION_ROUTE
