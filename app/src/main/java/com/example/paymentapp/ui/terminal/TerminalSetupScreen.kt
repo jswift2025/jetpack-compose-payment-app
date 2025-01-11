@@ -30,7 +30,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.focus.focusModifier
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.onGloballyPositioned
@@ -41,11 +40,13 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.toSize
 import com.example.paymentapp.R
+import com.example.paymentapp.data.terminal.Terminal
 import com.example.paymentapp.ui.components.CommonButton
 import com.example.paymentapp.ui.theme.PaymentAppTheme
 
 @Composable
 fun TerminalSetupScreen(
+    uiState: TerminalSetupUiState,
     isExpandedScreen: Boolean,
     openDrawer: () -> Unit,
     snackbarHostState: SnackbarHostState, modifier: Modifier = Modifier) {
@@ -61,7 +62,9 @@ fun TerminalSetupScreen(
             onConnectClick = {},
             onInfoClick = {}
         )
-        TerminalDetailsPanel(modifier)
+        when (uiState) {
+            is TerminalSetupUiState.TerminalTypes -> TerminalDetailsPanel(uiState, modifier)
+        }
     }
 }
 
@@ -116,14 +119,19 @@ fun TerminalActionsButtonPanel(
  * Displays terminal type dropdown, Selected Terminal and Connection Status
  */
 @Composable
-fun TerminalDetailsPanel(modifier: Modifier = Modifier) {
+fun TerminalDetailsPanel(
+    uiState: TerminalSetupUiState.TerminalTypes,
+    modifier: Modifier = Modifier) {
+    val availableTerminals = remember(uiState) {
+        uiState.availableTerminalTypes
+    }
     Column(horizontalAlignment = Alignment.Start, modifier = modifier) {
         Row(
             modifier = Modifier.fillMaxWidth(1f),
             horizontalArrangement = Arrangement.spacedBy(5.dp),
             verticalAlignment = Alignment.Top
         ) {
-            TerminalTypesDropdown(modifier = Modifier.weight(0.6f))
+            TerminalTypesDropdown(availableTerminals, modifier = Modifier.weight(0.6f))
             Column(modifier = Modifier.weight(0.4f)) {
                 Text(text = stringResource(R.string.label_selected_terminal))
                 Text(text = stringResource(R.string.common_placeholder)) // TODO: Display the terminal selected in the dropdown
@@ -160,21 +168,9 @@ fun CircularShape(modifier: Modifier, enclosingBoxSideSize: Dp) {
  * Display list of terminal types.
  */
 @Composable
-fun TerminalTypesDropdown(modifier: Modifier) {
+fun TerminalTypesDropdown(availableTerminals: List<Terminal>, modifier: Modifier) {
     // Store the expanded state of the Text Field
     var expanded by remember { mutableStateOf(false) }
-
-    val terminalTypes = listOf(
-        "350X",
-        "457C",
-        "45-BT",
-        "Moby-3000",
-        "Moby-8500",
-        "Moby-5500",
-        "G5X",
-        "C2X",
-        "Magtek-aDynamo"
-    )
 
     // Store the selected terminal
     var selectedTerminal by remember { mutableStateOf("") }
@@ -215,12 +211,12 @@ fun TerminalTypesDropdown(modifier: Modifier) {
                 inputFieldSize.width.toDp()
             })
         ) {
-            terminalTypes.forEach { terminal ->
+            availableTerminals.forEach { terminal ->
                 DropdownMenuItem(onClick = {
-                    selectedTerminal = terminal
+                    selectedTerminal = terminal.displayName
                     expanded = false
                 }, text = {
-                    Text(text = terminal)
+                    Text(text = terminal.displayName)
                 })
             }
         }
@@ -245,7 +241,10 @@ fun PreviewTerminalActionsButtonPanel() {
 @Composable
 fun PreviewTerminalDetailsPanel() {
     PaymentAppTheme {
-        TerminalDetailsPanel()
+        TerminalDetailsPanel(
+            uiState = TerminalSetupUiState.TerminalTypes(false, emptyList()),
+            modifier = Modifier
+        )
     }
 }
 
@@ -254,6 +253,7 @@ fun PreviewTerminalDetailsPanel() {
 fun PreviewTerminalSetupScreen() {
     PaymentAppTheme {
         TerminalSetupScreen(
+            TerminalSetupUiState.TerminalTypes(false, emptyList()),
             isExpandedScreen = false,
             openDrawer = {},
             snackbarHostState = SnackbarHostState()

@@ -1,11 +1,10 @@
 package com.example.paymentapp.ui.terminal
 
-import android.util.Log
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
-import com.example.paymentapp.ui.landing.LandingRoute
-import com.example.paymentapp.ui.landing.LandingScreen
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 
 /**
  * Displays the Terminal Setup route. Responsibility is to manage setting up navigation to the
@@ -23,11 +22,15 @@ private const val TAG = "TerminalSetup"
  */
 @Composable
 fun TerminalSetupRoute(
+    viewModel: TerminalSetupViewModel,
     isExpandedScreen: Boolean,
     openDrawer: () -> Unit,
     snackbarHostState: SnackbarHostState = remember { SnackbarHostState() }
 ) {
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+
     TerminalSetupScreen(
+        uiState,
         isExpandedScreen = isExpandedScreen,
         openDrawer = openDrawer,
         snackbarHostState = snackbarHostState
