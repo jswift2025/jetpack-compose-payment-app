@@ -18,6 +18,27 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
+    flavorDimensions.add("gateway")
+
+    // Apply flavor settings defined in src/<flavor_name>/flavor.gradle
+    productFlavors {
+        project.files("src").forEach {
+            if (it.isDirectory) {
+                val files = it.listFiles()?.filter { file ->
+                    file.isDirectory
+                }
+
+                files?.forEach { flavorDirectory ->
+                    flavorDirectory.listFiles().forEach { flavorFile ->
+                        if (flavorFile.name == "flavor.gradle") {
+                            apply(from = flavorFile)
+                        }
+                    }
+                }
+            }
+        }
+    }
+
     buildTypes {
         release {
             isMinifyEnabled = false
