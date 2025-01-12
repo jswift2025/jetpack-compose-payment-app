@@ -4,6 +4,10 @@ plugins {
     alias(libs.plugins.kotlin.compose)
 }
 
+apply(from = "types.gradle.kts")
+
+val NULL: String by project.extra
+
 android {
     namespace = "com.example.paymentapp"
     compileSdk = 35
@@ -16,6 +20,12 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        buildConfigField(
+            project.extra["TERMINALS_TYPE"] as String,
+            project.extra["TERMINALS_FIELD"] as String,
+            NULL
+        )
     }
 
     flavorDimensions.add("gateway")
@@ -54,6 +64,7 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
     }
 
     composeOptions {

@@ -1,7 +1,12 @@
+apply plugin: 'com.android.application'
+
 android {
     productFlavors {
         transit {
             dimension "gateway"
+
+            buildConfigField TERMINALS_TYPE, TERMINALS_FIELD, 'new ' + TERMINALS_TYPE + ' { ' +
+                    RP_45BT + ', ' + MOBY_3000 + ', ' + MOBY_5500 + '}'
         }
     }
 }
