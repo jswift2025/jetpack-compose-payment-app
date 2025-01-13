@@ -1,5 +1,6 @@
 package com.example.paymentapp.ui
 
+import android.Manifest
 import androidx.compose.foundation.layout.Row
 import androidx.compose.material3.DrawerState
 import androidx.compose.material3.DrawerValue
@@ -7,23 +8,27 @@ import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.example.paymentapp.connectivity.getRequiredBluetoothPermissions
 import com.example.paymentapp.data.AppContainer
 import com.example.paymentapp.ui.components.AppNavRail
+import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import kotlinx.coroutines.launch
 
 
+@OptIn(ExperimentalPermissionsApi::class)
 @Composable
 fun PaymentApp(
     appContainer: AppContainer,
     widthSizeClass: WindowWidthSizeClass,
-    modifier: Modifier = Modifier
-) {
+    modifier: Modifier = Modifier) {
     val navController = rememberNavController()
     val navigationActions = remember(navController) {
         PaymentNavigationActions(navController)
@@ -31,16 +36,18 @@ fun PaymentApp(
 
     val coroutineScope = rememberCoroutineScope()
     val navBackStackEntry by navController.currentBackStackEntryAsState()
-    val currentRoute =
-        navBackStackEntry?.destination?.route ?: PaymentDestinations.LANDING_ROUTE
+    val currentRoute = navBackStackEntry?.destination?.route ?: PaymentDestinations.LANDING_ROUTE
 
     val isExpandedScreen = widthSizeClass == WindowWidthSizeClass.Expanded
     val sizeAwareDrawerState = rememberSizeAwareDrawerState(isExpandedScreen)
 
+    // Check for permissions
+    val multiplePermissionsState = rememberMultiplePermissionsState(
+        getRequiredBluetoothPermissions()
+    )
     ModalNavigationDrawer(
         drawerContent = {
-            AppDrawer(
-                drawerState = sizeAwareDrawerState,
+            AppDrawer(drawerState = sizeAwareDrawerState,
                 currentRoute = currentRoute,
                 navigateToHome = navigationActions.navigateToLanding,
                 navigateToTerminalSetup = navigationActions.navigateToTerminalSetup,
@@ -49,10 +56,8 @@ fun PaymentApp(
                     coroutineScope.launch {
                         sizeAwareDrawerState.close()
                     }
-                }
-            )
-        },
-        drawerState = sizeAwareDrawerState,
+                })
+        }, drawerState = sizeAwareDrawerState,
         // Only enable the drawer via gestures if the screen is not expanded
         gesturesEnabled = !isExpandedScreen
     ) {
@@ -66,16 +71,20 @@ fun PaymentApp(
                 )
             }
         }
-        PaymentNavGraph(
-            appContainer = appContainer,
-            isExpandedScreen = isExpandedScreen,
-            navController = navController,
-            openDrawer = {
-                coroutineScope.launch {
-                    sizeAwareDrawerState.open()
-                }
+        if (multiplePermissionsState.permissions.isEmpty() || multiplePermissionsState.allPermissionsGranted) {
+            PaymentNavGraph(appContainer = appContainer,
+                isExpandedScreen = isExpandedScreen,
+                navController = navController,
+                openDrawer = {
+                    coroutineScope.launch {
+                        sizeAwareDrawerState.open()
+                    }
+                })
+        } else {
+            SideEffect {
+                multiplePermissionsState.launchMultiplePermissionRequest()
             }
-        )
+        }
     }
 }
 
