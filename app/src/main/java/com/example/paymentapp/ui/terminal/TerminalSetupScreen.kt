@@ -87,12 +87,12 @@ fun TerminalActionsButtonPanel(
             horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             CommonButton(
-                modifier = Modifier.weight(0.5f),
+                buttonSpecs = Modifier.weight(0.5f),
                 labelResource = R.string.label_scan,
                 onClick = onScanClick
             )
             CommonButton(
-                modifier = Modifier.weight(0.5f),
+                buttonSpecs = Modifier.weight(0.5f),
                 labelResource = R.string.label_connect,
                 onClick = onConnectClick
             )
@@ -102,12 +102,12 @@ fun TerminalActionsButtonPanel(
             horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             CommonButton(
-                modifier = Modifier.weight(0.5f),
+                buttonSpecs = Modifier.weight(0.5f),
                 labelResource = R.string.label_disconnect,
                 onClick = onDisconnectClick
             )
             CommonButton(
-                modifier = Modifier.weight(0.5f),
+                buttonSpecs = Modifier.weight(0.5f),
                 labelResource = R.string.label_info,
                 onClick = onInfoClick
             )

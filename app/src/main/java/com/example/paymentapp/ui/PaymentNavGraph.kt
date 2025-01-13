@@ -33,6 +33,7 @@ fun PaymentNavGraph(
         ) {
             LandingRoute(
                 isExpandedScreen = isExpandedScreen,
+                navController = navController,
                 openDrawer = openDrawer
             )
         }

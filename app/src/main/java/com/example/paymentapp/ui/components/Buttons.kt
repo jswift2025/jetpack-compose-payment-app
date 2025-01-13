@@ -1,7 +1,6 @@
 package com.example.paymentapp.ui.components
 
 import androidx.annotation.StringRes
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
@@ -11,11 +10,11 @@ import androidx.compose.ui.res.stringResource
 
 @Composable
 fun CommonButton(
-    modifier: Modifier = Modifier,
+    buttonSpecs: Modifier = Modifier,
     @StringRes labelResource: Int,
     onClick: () -> Unit) {
     Button(
-        modifier = modifier,
+        modifier = buttonSpecs,
         shape = ButtonDefaults.elevatedShape,
         onClick = onClick
     ) {

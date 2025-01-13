@@ -4,6 +4,9 @@ import android.util.Log
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
+import com.example.paymentapp.ui.PaymentNavigationActions
 
 /**
  * Displays the Landing route. Responsibility is to manage setting up logic for landing screen.
@@ -15,12 +18,18 @@ private const val TAG = "Landing"
 fun LandingRoute(
     isExpandedScreen: Boolean,
     openDrawer: () -> Unit,
+    navController: NavHostController = rememberNavController(),
     snackbarHostState: SnackbarHostState = remember { SnackbarHostState() }
 ) {
+    val navigationActions = remember(navController) {
+        PaymentNavigationActions(navController)
+    }
     // TODO: Update buttons to navigate to the appropriate destination in the NavGraph
     LandingRoute(
         isExpandedScreen = isExpandedScreen,
-        onClickTerminalSetup = { Log.d(TAG, "Terminal Setup clicked") },
+        onClickTerminalSetup = {
+            navigationActions.navigateToTerminalSetup.invoke()
+        },
         onClickTransaction = { Log.d(TAG, "Transaction clicked") },
         openDrawer = openDrawer,
         snackbarHostState = snackbarHostState
