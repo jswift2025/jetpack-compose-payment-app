@@ -8,6 +8,7 @@ import android.content.Context
 interface AppContainer {
     // TODO: Define TerminalRepository for getting data about a terminal
     val terminalRepository: Unit
+    val appContext: Context
 }
 
 /**
@@ -19,4 +20,5 @@ class AppContainerImpl(private val applicationContext: Context) : AppContainer {
 
     override val terminalRepository: Unit by lazy {
     }
+    override val appContext = applicationContext
 }

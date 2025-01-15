@@ -21,10 +21,16 @@ import kotlinx.coroutines.flow.update
 sealed interface TerminalSetupUiState {
 
     val isLoading: Boolean
+    val availableTerminalTypes: List<Terminal>
 
     data class TerminalTypes(
         override val isLoading: Boolean,
-        val availableTerminalTypes: List<Terminal>
+        override val availableTerminalTypes: List<Terminal>
+    ) : TerminalSetupUiState
+
+    data class InitiateBluetoothScan(
+        override val isLoading: Boolean,
+        override val availableTerminalTypes: List<Terminal>,
     ) : TerminalSetupUiState
 
 }
@@ -37,6 +43,9 @@ private data class TerminalSetupViewModelState(
     val isLoading: Boolean = false,
     val terminalTypes: List<Terminal>,
     val isConnected: Boolean = false,
+    val isBluetoothScanStart: Boolean = false,
+    val isBluetoothScanInProgress: Boolean = false,
+    val isBluetoothScanCompleted: Boolean = false,
     val bluetoothDevices: List<String> = emptyList(),
     val selectedTerminalType: Terminal? = null
 ) {
@@ -44,12 +53,18 @@ private data class TerminalSetupViewModelState(
      * Convert to appropriate [TerminalSetupUiState]
      */
     fun toUiState(): TerminalSetupUiState {
-        return TerminalSetupUiState.TerminalTypes(
-            false,
-            terminalTypes
-        )
+        return if (isBluetoothScanStart) {
+            TerminalSetupUiState.InitiateBluetoothScan(
+                isLoading = false,
+                availableTerminalTypes = terminalTypes
+            )
+        } else {
+            TerminalSetupUiState.TerminalTypes(
+                false,
+                terminalTypes
+            )
+        }
     }
-
 }
 
 /**
@@ -74,6 +89,15 @@ class TerminalSetupViewModel(private val terminalRepo: TerminalRepo) : ViewModel
     init {
         viewModelState.update {
             it.copy(terminalTypes = terminalRepo.getAvailableTerminals())
+        }
+    }
+
+    fun startBluetoothScan() {
+        viewModelState.update {
+            it.copy(
+                isBluetoothScanStart = true,
+                isLoading = false
+            )
         }
     }
 

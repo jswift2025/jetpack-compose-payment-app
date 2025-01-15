@@ -1,5 +1,6 @@
 package com.example.paymentapp.ui.terminal
 
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -33,6 +34,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -49,20 +51,32 @@ fun TerminalSetupScreen(
     uiState: TerminalSetupUiState,
     isExpandedScreen: Boolean,
     openDrawer: () -> Unit,
+    onScanClick: () -> Unit,
     snackbarHostState: SnackbarHostState, modifier: Modifier = Modifier) {
     val baseModifier = Modifier.padding(start = 10.dp, end = 10.dp)
+    val context = LocalContext.current
+
     Column(
         modifier = baseModifier.padding(top = 80.dp),
         verticalArrangement = Arrangement.spacedBy(30.dp)
     ) {
         TerminalActionsButtonPanel(
             modifier = modifier,
-            onScanClick = {},
+            onScanClick = onScanClick,
             onDisconnectClick = {},
             onConnectClick = {},
             onInfoClick = {}
         )
         when (uiState) {
+            is TerminalSetupUiState.InitiateBluetoothScan -> {
+                Toast.makeText(
+                    LocalContext.current,
+                    "Request Start Bluetooth Scan",
+                    Toast.LENGTH_LONG
+                ).show()
+                TerminalDetailsPanel(uiState, modifier)
+            }
+
             is TerminalSetupUiState.TerminalTypes -> TerminalDetailsPanel(uiState, modifier)
         }
     }
@@ -120,7 +134,7 @@ fun TerminalActionsButtonPanel(
  */
 @Composable
 fun TerminalDetailsPanel(
-    uiState: TerminalSetupUiState.TerminalTypes,
+    uiState: TerminalSetupUiState,
     modifier: Modifier = Modifier) {
     val availableTerminals = remember(uiState) {
         uiState.availableTerminalTypes
@@ -256,6 +270,7 @@ fun PreviewTerminalSetupScreen() {
             TerminalSetupUiState.TerminalTypes(false, emptyList()),
             isExpandedScreen = false,
             openDrawer = {},
+            onScanClick = {},
             snackbarHostState = SnackbarHostState()
         )
     }

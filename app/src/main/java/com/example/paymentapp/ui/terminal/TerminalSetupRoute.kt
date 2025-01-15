@@ -1,9 +1,11 @@
 package com.example.paymentapp.ui.terminal
 
+import android.bluetooth.BluetoothManager
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 
 /**
@@ -28,11 +30,21 @@ fun TerminalSetupRoute(
     snackbarHostState: SnackbarHostState = remember { SnackbarHostState() }
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val context = LocalContext.current
+
+    val onScanClick: () ->Unit = {
+        val bluetoothManager = context.getSystemService(BluetoothManager::class.java)
+        val bluetoothAdapter = bluetoothManager.adapter
+        if (bluetoothAdapter?.isEnabled == true) {
+            viewModel.startBluetoothScan()
+        }
+    }
 
     TerminalSetupScreen(
         uiState,
         isExpandedScreen = isExpandedScreen,
         openDrawer = openDrawer,
+        onScanClick = onScanClick,
         snackbarHostState = snackbarHostState
     )
 }
