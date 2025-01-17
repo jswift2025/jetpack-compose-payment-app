@@ -41,7 +41,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.toSize
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import com.example.paymentapp.R
+import com.example.paymentapp.connectivity.BluetoothScanObserver
 import com.example.paymentapp.data.terminal.Terminal
 import com.example.paymentapp.ui.components.CommonButton
 import com.example.paymentapp.ui.theme.PaymentAppTheme
@@ -67,17 +69,27 @@ fun TerminalSetupScreen(
             onConnectClick = {},
             onInfoClick = {}
         )
+        TerminalDetailsPanel(uiState, modifier)
         when (uiState) {
             is TerminalSetupUiState.InitiateBluetoothScan -> {
-                Toast.makeText(
-                    LocalContext.current,
-                    "Request Start Bluetooth Scan",
-                    Toast.LENGTH_LONG
-                ).show()
-                TerminalDetailsPanel(uiState, modifier)
+                BluetoothScanObserver(
+                    lifecycleOwner = LocalLifecycleOwner.current,
+                    bluetoothObserver = uiState.bluetoothReceiver,
+                    registerObserver = true
+                )
             }
 
-            is TerminalSetupUiState.TerminalTypes -> TerminalDetailsPanel(uiState, modifier)
+            is TerminalSetupUiState.TerminalTypes -> {
+                // no-op This is displayed by default
+            }
+
+            is TerminalSetupUiState.BluetoothScanComplete -> {
+                // TODO: Add Composable to display the returned Bluetooth devices
+            }
+
+            is TerminalSetupUiState.BluetoothScanInProgress -> {
+                //TODO: Add Composable to display progress dialog
+            }
         }
     }
 }

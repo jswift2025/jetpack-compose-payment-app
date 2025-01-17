@@ -1,8 +1,10 @@
 package com.example.paymentapp.ui.terminal
 
+import android.bluetooth.BluetoothDevice
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import com.example.paymentapp.connectivity.BluetoothReceiver
 import com.example.paymentapp.data.terminal.Terminal
 import com.example.paymentapp.data.terminal.TerminalRepo
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -29,8 +31,21 @@ sealed interface TerminalSetupUiState {
     ) : TerminalSetupUiState
 
     data class InitiateBluetoothScan(
-        override val isLoading: Boolean,
+        override val isLoading: Boolean = false,
         override val availableTerminalTypes: List<Terminal>,
+        val bluetoothReceiver: BluetoothReceiver? = null
+    ) : TerminalSetupUiState
+
+    data class BluetoothScanComplete(
+        override val isLoading: Boolean = false,
+        override val availableTerminalTypes: List<Terminal>,
+        val bluetoothDevices: List<BluetoothDevice> = emptyList()
+    ) : TerminalSetupUiState
+
+    data class BluetoothScanInProgress(
+        override val isLoading: Boolean = false,
+        override val availableTerminalTypes: List<Terminal>,
+        val bluetoothDevices: List<BluetoothDevice> = emptyList()
     ) : TerminalSetupUiState
 
 }
@@ -46,7 +61,8 @@ private data class TerminalSetupViewModelState(
     val isBluetoothScanStart: Boolean = false,
     val isBluetoothScanInProgress: Boolean = false,
     val isBluetoothScanCompleted: Boolean = false,
-    val bluetoothDevices: List<String> = emptyList(),
+    val bluetoothDevices: List<BluetoothDevice> = emptyList(),
+    val bluetoothReceiver: BluetoothReceiver? = null,
     val selectedTerminalType: Terminal? = null
 ) {
     /**
@@ -55,9 +71,16 @@ private data class TerminalSetupViewModelState(
     fun toUiState(): TerminalSetupUiState {
         return if (isBluetoothScanStart) {
             TerminalSetupUiState.InitiateBluetoothScan(
-                isLoading = false,
-                availableTerminalTypes = terminalTypes
+                availableTerminalTypes = terminalTypes,
+                bluetoothReceiver = bluetoothReceiver
             )
+        } else if (isBluetoothScanCompleted) {
+            TerminalSetupUiState.BluetoothScanComplete(
+                availableTerminalTypes = terminalTypes,
+                bluetoothDevices = bluetoothDevices
+            )
+        } else if (isBluetoothScanInProgress) {
+            TerminalSetupUiState.BluetoothScanInProgress(availableTerminalTypes = terminalTypes)
         } else {
             TerminalSetupUiState.TerminalTypes(
                 false,
@@ -92,11 +115,30 @@ class TerminalSetupViewModel(private val terminalRepo: TerminalRepo) : ViewModel
         }
     }
 
-    fun startBluetoothScan() {
+    fun startBluetoothScan(bluetoothReceiver: BluetoothReceiver) {
         viewModelState.update {
             it.copy(
                 isBluetoothScanStart = true,
-                isLoading = false
+                isBluetoothScanInProgress = false,
+                isLoading = false,
+                bluetoothReceiver = bluetoothReceiver
+            )
+        }
+    }
+
+    fun updateBluetoothScanProgress() {
+        viewModelState.update {
+            it.copy(isBluetoothScanInProgress = true)
+        }
+    }
+
+    fun loadBluetoothDevices(discoveredDevices: List<BluetoothDevice>) {
+        viewModelState.update {
+            it.copy(
+                isBluetoothScanStart = false,
+                isBluetoothScanCompleted = true,
+                isBluetoothScanInProgress = false,
+                bluetoothDevices = discoveredDevices
             )
         }
     }
