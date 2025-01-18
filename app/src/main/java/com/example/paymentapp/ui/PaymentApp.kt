@@ -1,6 +1,5 @@
 package com.example.paymentapp.ui
 
-import android.bluetooth.BluetoothManager
 import androidx.compose.foundation.layout.Row
 import androidx.compose.material3.DrawerState
 import androidx.compose.material3.DrawerValue

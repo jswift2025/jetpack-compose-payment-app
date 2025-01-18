@@ -1,6 +1,7 @@
 package com.example.paymentapp.ui.terminal
 
-import android.widget.Toast
+import android.annotation.SuppressLint
+import android.bluetooth.BluetoothDevice
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -8,17 +9,21 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.SnackbarHostState
@@ -37,15 +42,19 @@ import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.compose.ui.unit.toSize
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import com.example.paymentapp.R
 import com.example.paymentapp.connectivity.BluetoothScanObserver
 import com.example.paymentapp.data.terminal.Terminal
 import com.example.paymentapp.ui.components.CommonButton
+import com.example.paymentapp.ui.components.LabelledIndeterminateProgressIndicator
 import com.example.paymentapp.ui.theme.PaymentAppTheme
 
 @Composable
@@ -84,11 +93,11 @@ fun TerminalSetupScreen(
             }
 
             is TerminalSetupUiState.BluetoothScanComplete -> {
-                // TODO: Add Composable to display the returned Bluetooth devices
+                BluetoothSearchResultsList(uiState.bluetoothDevices)
             }
 
             is TerminalSetupUiState.BluetoothScanInProgress -> {
-                //TODO: Add Composable to display progress dialog
+                LabelledIndeterminateProgressIndicator(R.string.label_bluetooth_search)
             }
         }
     }
@@ -164,7 +173,7 @@ fun TerminalDetailsPanel(
             }
         }
         Spacer(modifier = Modifier.size(15.dp))
-        Text(text = stringResource(R.string.label_connection_status))
+        Text(text = stringResource(R.string.label_connection_status), fontWeight = FontWeight.Bold)
         CircularShape(modifier = Modifier, enclosingBoxSideSize = 50.dp)
     }
 }
@@ -247,6 +256,37 @@ fun TerminalTypesDropdown(availableTerminals: List<Terminal>, modifier: Modifier
             }
         }
 
+    }
+}
+
+@Composable
+fun BluetoothSearchResultsList(devices: List<BluetoothDevice> = emptyList(), modifier: Modifier = Modifier) {
+    Text(text = stringResource(R.string.label_bluetooth_search_results), style = TextStyle(fontWeight = FontWeight.Bold, fontSize = 28.sp))
+    LazyColumn(
+        modifier = modifier
+            .fillMaxWidth()
+            .fillMaxHeight()
+    ) {
+        items(devices.size, key = { devices[it].address }) {
+            BluetoothSearchResultListItem(devices[it])
+            HorizontalDivider(thickness = 1.dp, color = Color.LightGray)
+        }
+    }
+}
+
+@SuppressLint("MissingPermission")
+@Composable
+fun BluetoothSearchResultListItem(device: BluetoothDevice, modifier: Modifier = Modifier) {
+    Column(
+        modifier = modifier.padding(top=4.dp, bottom = 8.dp), horizontalAlignment = Alignment.Start,
+        verticalArrangement = Arrangement.SpaceEvenly
+    ) {
+        Text(text = device.name, style = TextStyle(fontWeight = FontWeight.Bold, fontSize = 18.sp))
+        Spacer(modifier = Modifier.height(4.dp))
+        Text(
+            text = device.address,
+            style = TextStyle(fontWeight = FontWeight.Normal, fontSize = 14.sp)
+        )
     }
 }
 

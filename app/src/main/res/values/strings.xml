@@ -19,6 +19,8 @@
     <string name="label_terminal_type">Terminal Type</string>
     <string name="label_selected_terminal">Selected Terminal</string>
     <string name="label_connection_status">Connection Status</string>
+    <string name="label_bluetooth_search">Searching for Bluetooth devices&#8230;</string>
+    <string name="label_bluetooth_search_results">Bluetooth Search Results</string>
 
 
 </resources>

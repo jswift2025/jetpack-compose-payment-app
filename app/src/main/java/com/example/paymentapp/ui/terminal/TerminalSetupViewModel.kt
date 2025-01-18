@@ -128,7 +128,9 @@ class TerminalSetupViewModel(private val terminalRepo: TerminalRepo) : ViewModel
 
     fun updateBluetoothScanProgress() {
         viewModelState.update {
-            it.copy(isBluetoothScanInProgress = true)
+            it.copy(
+                isBluetoothScanStart = false,
+                isBluetoothScanInProgress = true)
         }
     }
 

@@ -20,7 +20,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.LifecycleOwner
 
-const val BLUETOOTH_DISCOVERY_PERIOD_MILLIS = 15000L
+const val BLUETOOTH_DISCOVERY_PERIOD_MILLIS = 500L
 
 internal fun getRequiredBluetoothPermissions(): List<String> {
     return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
@@ -86,6 +86,7 @@ class BluetoothReceiver(
 ) : BroadcastReceiver() {
     private val discoveredDevices: MutableList<BluetoothDevice> = mutableListOf()
 
+    @SuppressLint("MissingPermission")
     override fun onReceive(context: Context?, intent: Intent?) {
         val action = intent?.action
 
@@ -99,8 +100,16 @@ class BluetoothReceiver(
                 BluetoothDevice.EXTRA_DEVICE,
                 BluetoothDevice::class.java
             )
-            device?.let {
-                discoveredDevices.add(device)
+
+            // Only add a BluetoothDevice if the name is not empty and if one with the same
+            // address does not already exist.
+            if (device?.name?.isNotEmpty() == true) {
+                val existingDevice = discoveredDevices.find { addedDevice ->
+                    device.address == addedDevice.address
+                }
+                if (existingDevice == null) {
+                    discoveredDevices.add(device)
+                }
             }
         }
     }
