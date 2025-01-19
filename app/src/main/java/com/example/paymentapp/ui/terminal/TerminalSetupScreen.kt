@@ -23,6 +23,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.HorizontalDivider
@@ -56,6 +57,7 @@ import com.example.paymentapp.R
 import com.example.paymentapp.connectivity.BluetoothScanObserver
 import com.example.paymentapp.data.terminal.Terminal
 import com.example.paymentapp.ui.components.CommonButton
+import com.example.paymentapp.ui.components.CustomButtonStyle
 import com.example.paymentapp.ui.components.LabelledIndeterminateProgressIndicator
 import com.example.paymentapp.ui.theme.PaymentAppTheme
 
@@ -127,6 +129,14 @@ fun TerminalActionsButtonPanel(
     onDisconnectClick: () -> Unit,
     onInfoClick: () -> Unit,
     scanClickEnabled: Boolean = true) {
+
+    val buttonPressedState = CustomButtonStyle.Pressed(
+        ButtonDefaults.buttonColors(
+            containerColor = Color.Black,
+            contentColor = Color.LightGray
+        )
+    )
+
     Column(
         modifier = modifier
             .fillMaxWidth()
@@ -139,12 +149,14 @@ fun TerminalActionsButtonPanel(
                 buttonSpecs = Modifier.weight(0.5f),
                 labelResource = R.string.label_scan,
                 onClick = onScanClick,
+                buttonStylePressed = buttonPressedState,
                 enabled = scanClickEnabled
             )
             CommonButton(
                 buttonSpecs = Modifier.weight(0.5f),
                 labelResource = R.string.label_connect,
-                onClick = onConnectClick
+                onClick = onConnectClick,
+                buttonStylePressed = buttonPressedState,
             )
         }
         Row(
@@ -154,12 +166,14 @@ fun TerminalActionsButtonPanel(
             CommonButton(
                 buttonSpecs = Modifier.weight(0.5f),
                 labelResource = R.string.label_disconnect,
-                onClick = onDisconnectClick
+                onClick = onDisconnectClick,
+                buttonStylePressed = buttonPressedState,
             )
             CommonButton(
                 buttonSpecs = Modifier.weight(0.5f),
                 labelResource = R.string.label_info,
-                onClick = onInfoClick
+                onClick = onInfoClick,
+                buttonStylePressed = buttonPressedState,
             )
         }
     }
