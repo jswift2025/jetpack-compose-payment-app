@@ -12,11 +12,13 @@ import androidx.compose.ui.res.stringResource
 fun CommonButton(
     buttonSpecs: Modifier = Modifier,
     @StringRes labelResource: Int,
-    onClick: () -> Unit) {
+    onClick: () -> Unit = {},
+    enabled:Boolean = true) {
     Button(
         modifier = buttonSpecs,
         shape = ButtonDefaults.elevatedShape,
-        onClick = onClick
+        onClick = onClick,
+        enabled = enabled
     ) {
         Text(text = stringResource(labelResource))
     }

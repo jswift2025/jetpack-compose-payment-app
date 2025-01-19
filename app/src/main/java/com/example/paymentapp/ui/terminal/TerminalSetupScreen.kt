@@ -71,6 +71,14 @@ fun TerminalSetupScreen(
     val baseModifier = Modifier.padding(start = 10.dp, end = 10.dp)
     val context = LocalContext.current
 
+    var scanClickEnabled by remember { mutableStateOf(true) }
+
+    if (uiState is TerminalSetupUiState.BluetoothScanInProgress) {
+        scanClickEnabled = false
+    } else {
+        scanClickEnabled = true
+    }
+
     Column(
         modifier = baseModifier.padding(top = 80.dp),
         verticalArrangement = Arrangement.spacedBy(30.dp)
@@ -80,7 +88,8 @@ fun TerminalSetupScreen(
             onScanClick = onScanClick,
             onDisconnectClick = {},
             onConnectClick = {},
-            onInfoClick = {}
+            onInfoClick = {},
+            scanClickEnabled = scanClickEnabled
         )
         TerminalDetailsPanel(uiState, modifier)
         when (uiState) {
@@ -116,7 +125,8 @@ fun TerminalActionsButtonPanel(
     onScanClick: () -> Unit,
     onConnectClick: () -> Unit,
     onDisconnectClick: () -> Unit,
-    onInfoClick: () -> Unit) {
+    onInfoClick: () -> Unit,
+    scanClickEnabled: Boolean = true) {
     Column(
         modifier = modifier
             .fillMaxWidth()
@@ -128,7 +138,8 @@ fun TerminalActionsButtonPanel(
             CommonButton(
                 buttonSpecs = Modifier.weight(0.5f),
                 labelResource = R.string.label_scan,
-                onClick = onScanClick
+                onClick = onScanClick,
+                enabled = scanClickEnabled
             )
             CommonButton(
                 buttonSpecs = Modifier.weight(0.5f),
@@ -233,45 +244,45 @@ fun TerminalTypesDropdown(availableTerminals: List<Terminal>, modifier: Modifier
 
     Column(modifier = modifier) {
         // Create an Outlined Text Field with icon and not expanded
-            OutlinedTextField(
-                value = selectedTerminal,
-                onValueChange = { selectedTerminal = it },
-                readOnly = true,
-                interactionSource = interactionSource,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .onGloballyPositioned { coordinates ->
-                        // This value is used to assign to the Dropdown the same width
-                        inputFieldSize = coordinates.size.toSize()
-                    },
-                label = { Text(stringResource(R.string.label_selected_terminal)) },
-                trailingIcon = {
-                    Icon(icon, "", Modifier.clickable {
-                        expanded = !expanded
-                    })
-                }
-            )
-        }
-
-        // Drop-down menu with list of terminals. When clicked, set the Text Field text as the terminal selected
-        DropdownMenu(
-            expanded = expanded,
-            onDismissRequest = { expanded = false },
-            modifier = Modifier.width(with(LocalDensity.current) {
-                inputFieldSize.width.toDp()
-            })
-        ) {
-            availableTerminals.forEach { terminal ->
-                DropdownMenuItem(onClick = {
-                    selectedTerminal = terminal.displayName
-                    expanded = false
-                }, text = {
-                    Text(text = terminal.displayName)
+        OutlinedTextField(
+            value = selectedTerminal,
+            onValueChange = { selectedTerminal = it },
+            readOnly = true,
+            interactionSource = interactionSource,
+            modifier = Modifier
+                .fillMaxWidth()
+                .onGloballyPositioned { coordinates ->
+                    // This value is used to assign to the Dropdown the same width
+                    inputFieldSize = coordinates.size.toSize()
+                },
+            label = { Text(stringResource(R.string.label_selected_terminal)) },
+            trailingIcon = {
+                Icon(icon, "", Modifier.clickable {
+                    expanded = !expanded
                 })
             }
-        }
-
+        )
     }
+
+    // Drop-down menu with list of terminals. When clicked, set the Text Field text as the terminal selected
+    DropdownMenu(
+        expanded = expanded,
+        onDismissRequest = { expanded = false },
+        modifier = Modifier.width(with(LocalDensity.current) {
+            inputFieldSize.width.toDp()
+        })
+    ) {
+        availableTerminals.forEach { terminal ->
+            DropdownMenuItem(onClick = {
+                selectedTerminal = terminal.displayName
+                expanded = false
+            }, text = {
+                Text(text = terminal.displayName)
+            })
+        }
+    }
+
+}
 
 @Composable
 fun BluetoothSearchResultsList(
