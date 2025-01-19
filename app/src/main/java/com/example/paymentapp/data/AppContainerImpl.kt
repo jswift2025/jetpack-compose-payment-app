@@ -16,9 +16,10 @@ interface AppContainer {
  *
  * Variables are initialized lazily and the same instance is shared across the whole app.
  */
-class AppContainerImpl(private val applicationContext: Context) : AppContainer {
+class AppContainerImpl(applicationContext: Context) : AppContainer {
 
     override val terminalRepository: Unit by lazy {
+        // TODO: Create TerminalRepo interface
     }
     override val appContext = applicationContext
 }

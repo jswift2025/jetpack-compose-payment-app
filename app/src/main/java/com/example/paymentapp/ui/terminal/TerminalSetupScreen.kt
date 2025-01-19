@@ -4,6 +4,8 @@ import android.annotation.SuppressLint
 import android.bluetooth.BluetoothDevice
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -56,6 +58,8 @@ import com.example.paymentapp.data.terminal.Terminal
 import com.example.paymentapp.ui.components.CommonButton
 import com.example.paymentapp.ui.components.LabelledIndeterminateProgressIndicator
 import com.example.paymentapp.ui.theme.PaymentAppTheme
+
+private const val TAG = "TerminalSetupScreen"
 
 @Composable
 fun TerminalSetupScreen(
@@ -212,6 +216,14 @@ fun TerminalTypesDropdown(availableTerminals: List<Terminal>, modifier: Modifier
 
     var inputFieldSize by remember { mutableStateOf(Size.Zero) }
 
+    val interactionSource = remember { MutableInteractionSource() }
+    val isPressed by interactionSource.collectIsPressedAsState()
+
+    // User clicks into the Textfield, displaying the dropdown
+    if (isPressed) {
+        expanded = true
+    }
+
     // Up Icon when expanded and down icon when collapsed
     val icon = if (expanded) {
         Icons.Filled.KeyboardArrowUp
@@ -221,22 +233,25 @@ fun TerminalTypesDropdown(availableTerminals: List<Terminal>, modifier: Modifier
 
     Column(modifier = modifier) {
         // Create an Outlined Text Field with icon and not expanded
-        OutlinedTextField(
-            value = selectedTerminal,
-            onValueChange = { selectedTerminal = it },
-            modifier = Modifier
-                .fillMaxWidth()
-                .onGloballyPositioned { coordinates ->
-                    // This value is used to assign to the Dropdown the same width
-                    inputFieldSize = coordinates.size.toSize()
-                },
-            label = { Text(stringResource(R.string.label_selected_terminal)) },
-            trailingIcon = {
-                Icon(icon, "", Modifier.clickable {
-                    expanded = !expanded
-                })
-            }
-        )
+            OutlinedTextField(
+                value = selectedTerminal,
+                onValueChange = { selectedTerminal = it },
+                readOnly = true,
+                interactionSource = interactionSource,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .onGloballyPositioned { coordinates ->
+                        // This value is used to assign to the Dropdown the same width
+                        inputFieldSize = coordinates.size.toSize()
+                    },
+                label = { Text(stringResource(R.string.label_selected_terminal)) },
+                trailingIcon = {
+                    Icon(icon, "", Modifier.clickable {
+                        expanded = !expanded
+                    })
+                }
+            )
+        }
 
         // Drop-down menu with list of terminals. When clicked, set the Text Field text as the terminal selected
         DropdownMenu(
@@ -257,11 +272,15 @@ fun TerminalTypesDropdown(availableTerminals: List<Terminal>, modifier: Modifier
         }
 
     }
-}
 
 @Composable
-fun BluetoothSearchResultsList(devices: List<BluetoothDevice> = emptyList(), modifier: Modifier = Modifier) {
-    Text(text = stringResource(R.string.label_bluetooth_search_results), style = TextStyle(fontWeight = FontWeight.Bold, fontSize = 28.sp))
+fun BluetoothSearchResultsList(
+    devices: List<BluetoothDevice> = emptyList(),
+    modifier: Modifier = Modifier) {
+    Text(
+        text = stringResource(R.string.label_bluetooth_search_results),
+        style = TextStyle(fontWeight = FontWeight.Bold, fontSize = 28.sp)
+    )
     LazyColumn(
         modifier = modifier
             .fillMaxWidth()
@@ -278,7 +297,8 @@ fun BluetoothSearchResultsList(devices: List<BluetoothDevice> = emptyList(), mod
 @Composable
 fun BluetoothSearchResultListItem(device: BluetoothDevice, modifier: Modifier = Modifier) {
     Column(
-        modifier = modifier.padding(top=4.dp, bottom = 8.dp), horizontalAlignment = Alignment.Start,
+        modifier = modifier.padding(top = 4.dp, bottom = 8.dp),
+        horizontalAlignment = Alignment.Start,
         verticalArrangement = Arrangement.SpaceEvenly
     ) {
         Text(text = device.name, style = TextStyle(fontWeight = FontWeight.Bold, fontSize = 18.sp))

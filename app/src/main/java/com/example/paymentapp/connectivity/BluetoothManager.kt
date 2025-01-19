@@ -20,7 +20,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.LifecycleOwner
 
-const val BLUETOOTH_DISCOVERY_PERIOD_MILLIS = 500L
+const val BLUETOOTH_DISCOVERY_PERIOD_MILLIS = 8000L
 
 internal fun getRequiredBluetoothPermissions(): List<String> {
     return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
