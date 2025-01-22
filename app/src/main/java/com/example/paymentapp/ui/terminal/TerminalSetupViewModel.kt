@@ -119,6 +119,7 @@ class TerminalSetupViewModel(private val terminalRepo: TerminalRepo) : ViewModel
         viewModelState.update {
             it.copy(
                 isBluetoothScanStart = true,
+                isBluetoothScanCompleted = false,
                 isBluetoothScanInProgress = false,
                 isLoading = false,
                 bluetoothReceiver = bluetoothReceiver
