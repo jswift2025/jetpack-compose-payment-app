@@ -2,7 +2,7 @@ package com.example.paymentapp.ui
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -41,7 +41,10 @@ fun PaymentNavGraph(
             route = PaymentDestinations.TERMINAL_SETUP_ROUTE
         ) {
             val viewModel: TerminalSetupViewModel =
-                viewModel(factory = TerminalSetupViewModel.provideFactory(TerminalRepoImpl()))
+                hiltViewModel<TerminalSetupViewModel, TerminalSetupViewModel.TerminalSetupViewModelFactory> { factory ->
+                    factory.create(TerminalRepoImpl())
+                }
+
             TerminalSetupRoute(
                 viewModel,
                 isExpandedScreen = isExpandedScreen,

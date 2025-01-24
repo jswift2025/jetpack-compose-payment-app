@@ -7,6 +7,10 @@ import androidx.lifecycle.viewModelScope
 import com.example.paymentapp.connectivity.BluetoothReceiver
 import com.example.paymentapp.data.terminal.Terminal
 import com.example.paymentapp.data.terminal.TerminalRepo
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedFactory
+import dagger.assisted.AssistedInject
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.map
@@ -93,7 +97,9 @@ private data class TerminalSetupViewModelState(
 /**
  * ViewModel that handles the business logic for the Terminal Setup screen
  */
-class TerminalSetupViewModel(private val terminalRepo: TerminalRepo) : ViewModel() {
+@HiltViewModel(assistedFactory = TerminalSetupViewModel.TerminalSetupViewModelFactory::class)
+class TerminalSetupViewModel @AssistedInject constructor(@Assisted val terminalRepo: TerminalRepo) :
+    ViewModel() {
 
     private val viewModelState = MutableStateFlow(
         TerminalSetupViewModelState(
@@ -131,7 +137,8 @@ class TerminalSetupViewModel(private val terminalRepo: TerminalRepo) : ViewModel
         viewModelState.update {
             it.copy(
                 isBluetoothScanStart = false,
-                isBluetoothScanInProgress = true)
+                isBluetoothScanInProgress = true
+            )
         }
     }
 
@@ -146,13 +153,9 @@ class TerminalSetupViewModel(private val terminalRepo: TerminalRepo) : ViewModel
         }
     }
 
-    companion object {
-        fun provideFactory(terminalRepo: TerminalRepo): ViewModelProvider.Factory =
-            object : ViewModelProvider.Factory {
-                override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                    return TerminalSetupViewModel(terminalRepo) as T
-                }
-            }
+    @AssistedFactory
+    interface TerminalSetupViewModelFactory {
+        fun create(terminalRepo: TerminalRepo): TerminalSetupViewModel
     }
 
 }
